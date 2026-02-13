@@ -49,7 +49,6 @@ The system will include:
 - Rental lifecycle state management
 - Rating and review system
 - Transaction tracking
-- Admin moderation features
 
 The focus of this project is backend architecture and business logic implementation.
 
@@ -62,7 +61,7 @@ The focus of this project is backend architecture and business logic implementat
 - User registration and login
 - JWT-based authentication
 - Password encryption
-- Role-based access control (Student/Admin)
+- Student-only access model (peer-to-peer system)
 - User wallet balance (simulated)
 
 ---
@@ -124,9 +123,43 @@ Rental States:
 
 State transitions are controlled by backend logic.
 
+### State Transition Rules
+
+The system enforces strict rental state transitions:
+
+- REQUESTED → APPROVED or CANCELLED
+- APPROVED → ACTIVE
+- ACTIVE → COMPLETED or LATE
+- LATE → COMPLETED (after fine settlement)
+
+Invalid transitions are rejected by the service layer to maintain system consistency.
+
+
 ---
 
-### 5.5 Deposit & Wallet System (Simulated)
+
+### 5.5 Owner Approval & Notification System
+
+When a student submits a rental request:
+
+- The resource owner receives an in-app notification.
+- The request status is set to REQUESTED.
+- The owner can either:
+  - APPROVE the request
+  - REJECT the request
+
+If approved:
+- Deposit is deducted from renter’s wallet.
+- Rental status becomes ACTIVE.
+
+If rejected:
+- Rental status becomes CANCELLED.
+
+Notifications are stored in the system and can be marked as read/unread.
+
+---
+
+### 5.6 Deposit & Wallet System (Simulated)
 
 - Deposit deducted at booking confirmation
 - Deposit locked during rental period
@@ -136,7 +169,7 @@ State transitions are controlled by backend logic.
 
 ---
 
-### 5.6 Late Fine Management
+### 5.7 Late Fine Management
 
 - Automatic late detection
 - Fine calculated per day
@@ -145,7 +178,7 @@ State transitions are controlled by backend logic.
 
 ---
 
-### 5.7 Rating & Review System
+### 5.8 Rating & Review System
 
 After rental completion:
 
@@ -156,7 +189,7 @@ After rental completion:
 
 ---
 
-### 5.8 Dashboard
+### 5.9 Dashboard
 
 Students can view:
 
@@ -165,18 +198,6 @@ Students can view:
 - Earnings (if lender)
 - Pending requests
 - Wallet balance
-
----
-
-### 5.9 Admin Features
-
-Admin can:
-
-- View all users
-- Ban users
-- Remove inappropriate items
-- View system statistics
-- Monitor total rentals
 
 ---
 
@@ -206,7 +227,7 @@ The project will demonstrate:
 
 - **Encapsulation** – Private properties with controlled access methods.
 - **Abstraction** – Clear separation of service logic from controller layer.
-- **Inheritance** – Base `User` class extended by `Student` and `Admin`.
+- **Inheritance** – Base `User` class extended by `Student`.
 - **Polymorphism** – Flexible payment and fine calculation strategies.
 
 ---
@@ -245,6 +266,21 @@ Database:
 
 Frontend:
 - React.js (basic UI for interaction)
+
+---
+
+## Business Rules & Data Constraints
+
+The system enforces the following constraints:
+
+- A student cannot rent their own resource.
+- A resource cannot be rented if quantity is unavailable.
+- Overlapping rental dates are not allowed.
+- A student must have sufficient wallet balance to place a request.
+- Ratings can only be submitted after rental completion.
+- A resource under active rental cannot be modified or deleted.
+
+All validations are handled in the service layer to ensure data integrity.
 
 ---
 
