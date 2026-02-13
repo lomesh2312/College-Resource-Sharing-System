@@ -32,7 +32,6 @@ The College Resource Sharing System solves this by providing:
 ## 3. Target Users
 
 - **Students** – Can list items, rent items, manage bookings, and track history.
-- **Admin** – Manages users, monitors listings, and ensures system integrity.
 
 ---
 
