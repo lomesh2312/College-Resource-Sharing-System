@@ -16,13 +16,7 @@ A professional full-stack platform for campus resource sharing, built with **Typ
 ### 1. Database Setup
 1. Create a project in [Neon](https://neon.tech).
 2. Copy your Connection String.
-3. In `backend/`, create a `.env` file:
-   ```env
-   DATABASE_URL="your_neon_connection_string"
-   JWT_SECRET="your_secure_secret"
-   PORT=5000
-   ```
-4. Run migrations:
+3. Run migrations:
    ```bash
    cd backend
    npx prisma migrate dev --name init
@@ -35,10 +29,8 @@ npm run dev
 ```
 
 ### 3. Run the Frontend
-1. In `frontend/`, create a `.env` file:
-   ```env
-   VITE_API_URL="http://localhost:5000/api"
-   ```
+1. In `frontend/`
+   
 2. Start the dev server:
    ```bash
    cd frontend
