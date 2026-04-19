@@ -1,0 +1,84 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String         @id @default(uuid())
+  email         String         @unique
+  password      String
+  name          String
+  walletBalance Float          @default(100.0)
+  items         Resource[]     @relation("OwnerItems")
+  rentals       Rental[]       @relation("RenterRentals")
+  notifications Notification[]
+  sentRatings   Rating[]       @relation("FromUser")
+  receivedRatings Rating[]     @relation("ToUser")
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+}
+
+model Resource {
+  id             String   @id @default(uuid())
+  ownerId        String
+  owner          User     @relation("OwnerItems", fields: [ownerId], references: [id])
+  name           String
+  description    String
+  category       String
+  depositAmount  Float
+  rentPerDay     Float
+  quantity       Int      @default(1)
+  rentals        Rental[]
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+enum RentalStatus {
+  REQUESTED
+  APPROVED
+  ACTIVE
+  COMPLETED
+  CANCELLED
+  LATE
+}
+
+model Rental {
+  id         String       @id @default(uuid())
+  renterId   String
+  renter     User         @relation("RenterRentals", fields: [renterId], references: [id])
+  resourceId String
+  resource   Resource     @relation(fields: [resourceId], references: [id])
+  startDate  DateTime
+  endDate    DateTime
+  status     RentalStatus @default(REQUESTED)
+  fineAmount Float        @default(0.0)
+  rating     Rating?
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
+}
+
+model Notification {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  message   String
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
+
+model Rating {
+  id         String   @id @default(uuid())
+  rentalId   String   @unique
+  rental     Rental   @relation(fields: [rentalId], references: [id])
+  fromUserId String
+  fromUser   User     @relation("FromUser", fields: [fromUserId], references: [id])
+  toUserId   String
+  toUser     User     @relation("ToUser", fields: [toUserId], references: [id])
+  score      Int
+  comment    String?
+  createdAt  DateTime @default(now())
+}
